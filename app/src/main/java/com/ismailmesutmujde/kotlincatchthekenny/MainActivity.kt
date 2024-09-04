@@ -1,10 +1,14 @@
 package com.ismailmesutmujde.kotlincatchthekenny
 
+import android.content.DialogInterface
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.ImageView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.ismailmesutmujde.kotlincatchthekenny.databinding.ActivityMainBinding
 import java.util.Random
@@ -50,7 +54,40 @@ class MainActivity : AppCompatActivity() {
         imageArray.add(bindingMainActivity.imageView23)
         imageArray.add(bindingMainActivity.imageView24)
         imageArray.add(bindingMainActivity.imageView25)
+
         hideImages()
+
+        // CountDownTimer
+        object : CountDownTimer(30500,1000) {
+            override fun onTick(p0: Long) {
+                bindingMainActivity.timeText.text = "Time : ${p0/1000}"
+            }
+
+            override fun onFinish() {
+                bindingMainActivity.timeText.text = "Time : 0"
+                handler.removeCallbacks(runnable)
+
+                for (image in imageArray) {
+                    image.visibility = View.INVISIBLE
+                }
+
+                // alert dialog
+                val alert = AlertDialog.Builder(this@MainActivity)
+                alert.setTitle("Game Over")
+                alert.setMessage("Restart The Game?")
+                alert.setPositiveButton("Yes", DialogInterface.OnClickListener { dialogInterface, i ->
+                    // restart
+                    val intentFromMain = intent
+                    finish()
+                    startActivity(intentFromMain)
+                })
+                alert.setNegativeButton("No", DialogInterface.OnClickListener { dialogInterface, i ->
+                    Toast.makeText(this@MainActivity, "Game Over!", Toast.LENGTH_LONG).show()
+                })
+                alert.show()
+            }
+
+        }.start()
     }
 
     fun hideImages() {
